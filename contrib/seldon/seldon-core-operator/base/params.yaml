@@ -1,0 +1,10 @@
+varReference:
+- path: spec/template/spec/containers/image
+  kind: Deployment
+- path: data/predictor_servers
+  kind: ConfigMap
+- path: data/storageInitializer
+  kind: ConfigMap
+- path: data/explainer
+  kind: ConfigMap  
+  

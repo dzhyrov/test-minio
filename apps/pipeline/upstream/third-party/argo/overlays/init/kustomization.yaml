@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../image-pull-secret
+
+resources:
+- cr.yaml
+- crb.yaml
+
+patchesStrategicMerge:
+- workflow-controller-deployment-patch.yaml
+
+# Allow Kustomize vars to replace fields defined in params.yaml.
+# The vars can be defined anywhere.
+configurations:
+- params.yaml
+
+images:
+- name: argo-init
+  newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/argo/init-container
+  newTag: kf-1.3-latest-dev

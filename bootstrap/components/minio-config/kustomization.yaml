@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- sa.yaml
+- cr.yaml
+- crb.yaml
+- ns.yaml
+- job.yaml
+generatorOptions:
+ disableNameSuffixHash: true
+configMapGenerator:
+- name: minio-config-generator
+  files:
+  - entrypoint.py
+  - default_config.json
+- name: minio-config-generator-parameters
+  env: params.env
+images:
+  - name: kubernetes-python
+    newName: $(AIRGAP_REGISTRY-env)gcr.io/mapr-252711/kubeflow/python-k8s
+    newTag: "latest-dev"
+vars:
+- name: AIRGAP_REGISTRY-env
+  objref:
+    kind: ConfigMap
+    name: minio-config-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+- name: externalMinioConfigSecretName
+  objref:
+    kind: ConfigMap
+    name: minio-config-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.externalMinioConfigSecretName
+- name: externalMinioConfigSecretNamespace
+  objref:
+    kind: ConfigMap
+    name: minio-config-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.externalMinioConfigSecretNamespace
+configurations:
+- params.yaml

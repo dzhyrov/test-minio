@@ -1,0 +1,5 @@
+varReference:
+- path: spec/template/spec/containers/image
+  kind: Deployment
+- path: data/spawner_ui_config.yaml
+  kind: ConfigMap

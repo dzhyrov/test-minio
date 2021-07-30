@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubeflow-operator
+subjects:
+- kind: ServiceAccount
+  name: dex-secret-generator
+  namespace: kubeflow-jobs
+roleRef:
+  kind: ClusterRole
+  name: dex-secret-generator
+  apiGroup: rbac.authorization.k8s.io

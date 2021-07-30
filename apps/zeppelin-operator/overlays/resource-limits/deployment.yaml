@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zeppelin-operator
+spec:
+  template:
+    spec:
+      containers:
+        - name: zeppelin-operator
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"
+            requests:
+              cpu: "200m"
+              memory: "256Mi"

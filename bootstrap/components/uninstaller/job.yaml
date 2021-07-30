@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kf-uninstaller
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+      - name: hpe-imagepull-secrets
+      serviceAccountName: kf-uninstaller
+      containers:
+      - name: script
+        image: kubernetes
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args:
+        - "/mnt/entrypoint/entrypoint.sh"
+        volumeMounts:
+        - mountPath: /mnt/entrypoint
+          name: entrypoint
+        env:
+        - name: MANIFESTS_LOCATION
+          value: "$(MANIFESTS_LOCATION)"
+        - name: KF_JOBS_NS
+          value: "$(KF_JOBS_NS)"
+      restartPolicy: Never
+      volumes:
+      - name: entrypoint
+        configMap:
+          name: kf-uninstaller

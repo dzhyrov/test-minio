@@ -1,0 +1,7 @@
+varReference:
+- path: data/artifactRepository
+  kind: ConfigMap
+- path: spec/template/spec/containers/image
+  kind: Deployment
+- path: spec/template/spec/containers/args
+  kind: Deployment

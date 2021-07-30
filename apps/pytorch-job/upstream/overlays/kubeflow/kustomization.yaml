@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kubeflow
+resources:
+- ../../base
+commonLabels:
+  app: pytorch-operator
+  kustomize.component: pytorch-operator
+  app.kubernetes.io/component: pytorch
+  app.kubernetes.io/name: pytorch-operator
+images:
+- name: gcr.io/kubeflow-images-public/pytorch-operator
+  newName: $(airgapRegistry)gcr.io/kubeflow-images-public/pytorch-operator
+
+configMapGenerator:
+- name: pytorch-operator-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: pytorch-operator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+configurations:
+- params.yaml

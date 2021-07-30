@@ -1,0 +1,8 @@
+{
+  "host": "minio-service.kubeflow.svc.cluster.local",
+  "port": "9000",
+  "insecure": "true",
+  "secure": "false",
+  "accesskey": "minio",
+  "secretkey": "minio123"
+}

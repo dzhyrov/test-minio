@@ -1,0 +1,34 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: istio-system
+
+resources:
+- cluster-local-gateway.yaml
+- gateway-authorizationpolicy.yaml
+- gateway.yaml
+
+patchesStrategicMerge:
+- patches/remove-pdb.yaml
+
+images:
+- name: docker.io/istio/proxyv2
+  newName: $(airgapRegistry)istio/proxyv2
+  newTag: 1.9.0
+
+configMapGenerator:
+- name: cluster-local-gateway-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: cluster-local-gateway-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+configurations:
+- params.yaml

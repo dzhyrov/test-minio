@@ -1,0 +1,11 @@
+varReference:
+  - path: spec/http/route/destination/host
+    kind: VirtualService
+  - path: spec/template/spec/containers/image
+    kind: Deployment
+  - path: data/metrics-collector-sidecar
+    kind: ConfigMap
+  - path: data/suggestion
+    kind: ConfigMap
+  - path: data/early-stopping
+    kind: ConfigMap

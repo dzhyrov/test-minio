@@ -1,0 +1,57 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: knative-serving
+resources:
+- gateway.yaml
+- cluster-role.yaml
+- cluster-role-binding.yaml
+- config-map.yaml
+- deployment.yaml
+- secret.yaml
+- service-account.yaml
+- service.yaml
+- image.yaml
+- hpa.yaml
+- webhook-configuration.yaml
+- istio-authorization-policy.yaml
+commonLabels:
+  kustomize.component: knative
+  app.kubernetes.io/component: knative-serving-install
+  app.kubernetes.io/name: knative-serving-install
+images:
+- name: gcr.io/knative-releases/knative.dev/serving/cmd/activator
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/serving/cmd/activator
+  newTag: v0.14.3
+- name: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler
+  newTag: v0.14.3
+- name: gcr.io/knative-releases/knative.dev/serving/cmd/webhook
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/serving/cmd/webhook
+  newTag: v0.14.3
+- name: gcr.io/knative-releases/knative.dev/serving/cmd/controller
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/serving/cmd/controller
+  newTag: v0.14.3
+- name: gcr.io/knative-releases/knative.dev/net-istio/cmd/controller
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/net-istio/cmd/controller
+  newTag: v0.14.1
+- name: gcr.io/knative-releases/knative.dev/net-istio/cmd/webhook
+  newName: $(airgapRegistry)gcr.io/knative-releases/knative.dev/net-istio/cmd/webhook
+  newTag: v0.14.1
+
+configMapGenerator:
+- name: knative-serving-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: knative-serving-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+configurations:
+- params.yaml

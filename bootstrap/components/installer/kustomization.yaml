@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- sa.yaml
+- cr.yaml
+- crb.yaml
+- job.yaml
+generatorOptions:
+ disableNameSuffixHash: true
+configMapGenerator:
+- name: kf-installer
+  files:
+  - entrypoint.sh
+- name: kf-installer-parameters
+  env: params.env
+images:
+  - name: kubernetes
+    newName: $(airgapRegistry)gcr.io/mapr-252711/kf-ecp-5.3.0/kubeflow-install
+    newTag: latest-dev
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+- name: KF_JOBS_NS
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.KF_JOBS_NS
+- name: MANIFESTS_LOCATION
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.MANIFESTS_LOCATION
+- name: DISABLE_ISTIO
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.DISABLE_ISTIO
+- name: DISABLE_NOTEBOOKSERVERS_LINK
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.DISABLE_NOTEBOOKSERVERS_LINK
+- name: http_proxy
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.HTTP_PROXY
+- name: https_proxy
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.HTTPS_PROXY
+configurations:
+- params.yaml

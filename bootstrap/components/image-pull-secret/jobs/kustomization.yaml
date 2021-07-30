@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ips.yaml
+generatorOptions:
+ disableNameSuffixHash: true
+configMapGenerator:
+- name: ips-parameters
+  env: params.env
+vars:
+- name: KF_JOBS_NS
+  objref:
+    kind: ConfigMap
+    name: ips-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.KF_JOBS_NS
+configurations:
+- params.yaml

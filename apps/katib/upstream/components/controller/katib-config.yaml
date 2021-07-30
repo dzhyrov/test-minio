@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: katib-config
+  namespace: kubeflow
+data:
+  metrics-collector-sidecar: |-
+    {
+      "StdOut": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/file-metrics-collector:v0.11.0"
+      },
+      "File": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/file-metrics-collector:v0.11.0"
+      },
+      "TensorFlowEvent": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/tfevent-metrics-collector:v0.11.0",
+        "resources": {
+          "limits": {
+            "memory": "1Gi"
+          }
+        }
+      }
+    }
+  suggestion: |-
+    {
+      "random": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-hyperopt:v0.11.0"
+      },
+      "tpe": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-hyperopt:v0.11.0"
+      },
+      "grid": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-chocolate:v0.11.0"
+      },
+      "hyperband": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-hyperband:v0.11.0"
+      },
+      "bayesianoptimization": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-skopt:v0.11.0"
+      },
+      "cmaes": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-goptuna:v0.11.0"
+      },
+      "enas": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-enas:v0.11.0",
+        "resources": {
+          "limits": {
+            "memory": "200Mi"
+          }
+        }
+      },
+      "darts": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/suggestion-darts:v0.11.0"
+      }
+    }
+  early-stopping: |-
+    {
+      "medianstop": {
+        "image": "$(airgapRegistry)docker.io/kubeflowkatib/earlystopping-medianstop:v0.11.0"
+      }
+    }

@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dex-secret-generator
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: hpe-imagepull-secrets
+      serviceAccountName: dex-secret-generator
+      containers:
+        - name: script
+          image: kubernetes-python
+          imagePullPolicy: IfNotPresent
+          command: ["python3"]
+          args:
+            - "/mnt/dex-secret-generator/entrypoint.py"
+          volumeMounts:
+            - mountPath: /mnt/dex-secret-generator
+              name: dex-secret-generator
+          env:
+            - name: AUTH_SECRET_NAME
+              value: "$(AUTH_SECRET_NAME-env)"
+            - name: AUTH_SECRET_NAMESPACE
+              value: "$(AUTH_SECRET_NAMESPACE-env)"
+      volumes:
+        - name: dex-secret-generator
+          configMap:
+            name: dex-secret-generator
+      restartPolicy: Never

@@ -1,0 +1,9 @@
+resources:
+- manager.yaml
+- service.yaml
+
+configurations:
+- params.yaml
+images:
+- name: ko://github.com/kubeflow/kfserving/cmd/manager
+  newName: $(airgapRegistry)ko://github.com/kubeflow/kfserving/cmd/manager

@@ -1,0 +1,45 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- auth-ns.yaml
+- sa.yaml
+- cr.yaml
+- crb.yaml
+- job.yaml
+generatorOptions:
+ disableNameSuffixHash: true
+configMapGenerator:
+- name: dex-secret-generator
+  files:
+    - entrypoint.py
+    - template.yaml
+- name: dex-secret-generator-parameters
+  env: params.env
+images:
+  - name: kubernetes-python
+    newName: $(AIRGAP_REGISTRY-env)gcr.io/mapr-252711/kubeflow/python-k8s
+    newTag: "latest-dev"
+vars:
+- name: AIRGAP_REGISTRY-env
+  objref:
+    kind: ConfigMap
+    name: dex-secret-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+- name: AUTH_SECRET_NAME-env
+  objref:
+    kind: ConfigMap
+    name: dex-secret-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AUTH_SECRET_NAME
+- name: AUTH_SECRET_NAMESPACE-env
+  objref:
+    kind: ConfigMap
+    name: dex-secret-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AUTH_SECRET_NAMESPACE
+configurations:
+- params.yaml

@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex
+spec:
+  template:
+    spec:
+      containers:
+      - name: dex
+        env:
+        - name: AUTH_SECRET_BIND_PW
+          valueFrom:
+            secretKeyRef:
+              key: AUTH_SECRET_BIND_PW
+              name: dex-config-secret
+      volumes:
+      - name: config
+        configMap: null
+        secret:
+          secretName: dex-config-secret

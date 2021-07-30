@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zeppelin-operator
+spec:
+  template:
+    spec:
+      containers:
+      - name: zeppelin-operator
+        env:
+          - name: USE_ISTIO
+            valueFrom:
+              configMapKeyRef:
+                name: zeppelin-operator-config
+                key: USE_ISTIO
+          - name: ISTIO_GATEWAY
+            valueFrom:
+              configMapKeyRef:
+                name: zeppelin-operator-config
+                key: ISTIO_GATEWAY

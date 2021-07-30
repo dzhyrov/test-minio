@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kf-installer
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+      - name: hpe-imagepull-secrets
+      serviceAccountName: kf-installer
+      containers:
+      - name: script
+        image: kubernetes
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args:
+        - "/mnt/entrypoint/entrypoint.sh"
+        volumeMounts:
+        - mountPath: /mnt/entrypoint
+          name: entrypoint
+        env:
+        - name: DISABLE_ISTIO
+          value: "$(DISABLE_ISTIO)"
+        - name: MANIFESTS_LOCATION
+          value: "$(MANIFESTS_LOCATION)"
+        - name: KF_JOBS_NS
+          value: "$(KF_JOBS_NS)"
+        - name: DISABLE_NOTEBOOKSERVERS_LINK
+          value: "$(DISABLE_NOTEBOOKSERVERS_LINK)"
+        - name: http_proxy
+          value: "$(http_proxy)"
+        - name: https_proxy
+          value: "$(https_proxy)"
+      restartPolicy: Never
+      volumes:
+      - name: entrypoint
+        configMap:
+          name: kf-installer

@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kf-installer
+subjects:
+- kind: ServiceAccount
+  name: kf-installer
+  namespace: kubeflow-jobs
+roleRef:
+  kind: ClusterRole
+  name: kf-installer
+  apiGroup: rbac.authorization.k8s.io
