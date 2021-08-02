@@ -63,6 +63,6 @@ try:
         )
     )
 except client.exceptions.ApiException as err:
-    sys.exit("Error while creating secret: " + err)
+    sys.exit("Error while creating secret: " + str(err))
 
 print("Success!")
