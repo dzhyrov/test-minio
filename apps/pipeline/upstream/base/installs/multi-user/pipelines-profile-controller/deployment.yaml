@@ -25,12 +25,12 @@ spec:
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: mlpipeline-minio-artifact
+              name: minio-params
               key: accesskey
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: mlpipeline-minio-artifact
+              name: minio-params
               key: secretkey
         - name: airgapRegistry
           value: $(airgapRegistry)

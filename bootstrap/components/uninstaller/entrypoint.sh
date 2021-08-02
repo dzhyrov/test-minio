@@ -89,7 +89,12 @@ delete_kf_services()
 if test_env_vars; then
     curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
     mkdir manifests
-    tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1
+    if tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1; then
+        printf "\nManifests downloaded successfully\n\n"
+    else
+        printf "\nManifests download failed\n\n"
+        exit 1
+    fi
 
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/installer | kubectl delete -f - -n ${KF_JOBS_NS} --ignore-not-found
 

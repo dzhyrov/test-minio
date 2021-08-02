@@ -129,7 +129,12 @@ install()
 if test_env_vars; then
     curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
     mkdir manifests
-    tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1
+    if tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1; then
+        printf "\nManifests downloaded successfully\n\n"
+    else
+        printf "\nManifests download failed\n\n"
+        exit 1
+    fi
     unset http_proxy
     unset https_proxy
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/minio-config | kubectl apply -f - -n ${KF_JOBS_NS}
