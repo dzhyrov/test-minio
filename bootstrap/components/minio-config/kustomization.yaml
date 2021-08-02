@@ -27,6 +27,13 @@ vars:
     apiVersion: v1
   fieldref:
     fieldpath: data.AIRGAP_REGISTRY
+- name: KF_JOBS_NS
+  objref:
+    kind: ConfigMap
+    name: minio-config-generator-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.KF_JOBS_NS
 - name: externalMinioConfigSecretName
   objref:
     kind: ConfigMap

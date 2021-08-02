@@ -5,6 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: minio-config-generator
+  namespace: $(KF_JOBS_NS)
 roleRef:
   kind: ClusterRole
   name: minio-config-generator
