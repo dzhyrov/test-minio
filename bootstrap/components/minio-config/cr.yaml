@@ -1,12 +1,12 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: argo-init
+  name: minio-config-generator
 rules:
 - apiGroups:
     - ""
   resources:
-    - configmaps
+    - secrets
   verbs:
     - get
     - patch
