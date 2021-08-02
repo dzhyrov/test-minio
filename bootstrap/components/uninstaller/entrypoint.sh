@@ -80,11 +80,6 @@ delete_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/apps/centraldashboard/upstream/overlays/istio | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/katib/upstream/installs/katib-with-kubeflow | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/kfserving/upstream/overlays/kubeflow | kubectl delete -f -
-    if kubectl get secret -n ${EXTERNAL_MINIO_SECRET_NAMESPACE} ${EXTERNAL_MINIO_SECRET_NAME} --ignore-not-found | grep . > /dev/null; then
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio-console/overlays/init | kubectl delete -f -
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/options/istio | kubectl delete -f -
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/base | kubectl delete -f -
-    fi
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/env/platform-agnostic-multi-user | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/kubeflow-istio-resources/base | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-roles/base | kubectl delete -f -
@@ -92,7 +87,7 @@ delete_kf_services()
 }
 
 if test_env_vars; then
-    curl -o ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
     mkdir manifests
     tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1
 

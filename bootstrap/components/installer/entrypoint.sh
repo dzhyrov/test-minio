@@ -6,8 +6,6 @@ RETRY_TIMEOUT=8
 MAX_RETRIES=8
 MANIFESTS_DIR=manifests
 CURRENT_DIR=$(pwd)
-EXTERNAL_MINIO_SECRET_NAME=kubeflow-external-minio
-EXTERNAL_MINIO_SECRET_NAMESPACE=kubeflow-minio
 
 DISABLE_ISTIO=${DISABLE_ISTIO:-false}
 DISABLE_NOTEBOOKSERVERS_LINK=${DISABLE_NOTEBOOKSERVERS_LINK:-false}
@@ -69,14 +67,7 @@ deploy_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-roles/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/kubeflow-istio-resources/base | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/overlays/image-pull-secret | kubectl apply -f -
-    
-    if kubectl get secret -n ${EXTERNAL_MINIO_SECRET_NAMESPACE} ${EXTERNAL_MINIO_SECRET_NAME} --ignore-not-found | grep . > /dev/null; then
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/base | kubectl apply -f -
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/options/istio | kubectl apply -f -
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio-console/overlays/init | kubectl apply -f -
-    fi
-
+    ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/overlays/image-pull-secret | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/apps/kfserving/upstream/overlays/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/apps/katib/upstream/installs/katib-with-kubeflow | kubectl apply -f -
     
