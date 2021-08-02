@@ -46,6 +46,16 @@ spec:
               secretKeyRef:
                 name: minio-params
                 key: secretkey
+          - name: MINIO_SERVICE_HOST
+            valueFrom:
+              secretKeyRef:
+                name: minio-params
+                key: host
+          - name: MINIO_SERVICE_PORT
+            valueFrom:
+              secretKeyRef:
+                name: minio-params
+                key: port
           - name: ALLOW_CUSTOM_VISUALIZATIONS
             value: "true"
         readinessProbe:
