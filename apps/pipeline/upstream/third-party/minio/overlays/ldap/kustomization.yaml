@@ -8,6 +8,8 @@ resources:
 patchesStrategicMerge:
 - deployment.yaml
 
+namespace: kubeflow
+
 images:
 - name: minio-init
   newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/init
@@ -18,3 +20,18 @@ images:
 
 configurations:
 - params.yaml
+
+configMapGenerator:
+- name: minio-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: minio-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
