@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  labels:
+    app: minio
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      serviceAccount: kubeflow-minio
+      initContainers:
+      - name: init
+        image: minio-init
+      containers:
+      - args: null
+        env: null
+        image: minio
+        name: minio
