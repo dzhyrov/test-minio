@@ -80,6 +80,7 @@ delete_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/apps/centraldashboard/upstream/overlays/istio | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/katib/upstream/installs/katib-with-kubeflow | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/kfserving/upstream/overlays/kubeflow | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio-console/base | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/options/istio | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/base | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/env/platform-agnostic-multi-user | kubectl delete -f -

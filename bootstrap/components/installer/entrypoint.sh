@@ -69,10 +69,12 @@ deploy_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-roles/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/kubeflow-istio-resources/base | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/overlays/image-pull-secret | kubectl apply -f - && \
     
     kubectl get secret -n ${EXTERNAL_MINIO_SECRET_NAMESPACE} ${EXTERNAL_MINIO_SECRET_NAME} --ignore-not-found | grep . > /dev/null || {
         ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/base | kubectl apply -f -
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/options/istio | kubectl apply -f -
+        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/overlays/ldap | kubectl apply -f -
+        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio-console/base | kubectl apply -f -
     }
     
     ./kustomize build ${MANIFESTS_DIR}/apps/kfserving/upstream/overlays/kubeflow | kubectl apply -f - && \
