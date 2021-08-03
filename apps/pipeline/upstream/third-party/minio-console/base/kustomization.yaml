@@ -8,6 +8,7 @@ resources:
 - crb.yaml
 - deployment.yaml
 - service.yaml
+namespace: kubeflow
 configMapGenerator:
 - name: pipeline-minio-parameters
   envs:

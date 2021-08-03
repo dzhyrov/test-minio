@@ -1,0 +1,72 @@
+tmp_file=$1
+ip=$2
+
+echo "Pull all the images to the node where the docker registry is installed"
+images=()
+while read line; do
+	image=$(echo $line | cut -d' ' -f2)
+	images+=($image)
+	echo "docker pull $image"
+	docker pull $image
+	echo "==================================================================================================================="
+done < $tmp_file
+
+echo ''
+echo ''
+echo ''
+echo ''
+echo ''
+
+echo "Tag the images with new tags"
+tags=()
+for image in "${images[@]}"
+do
+	#Remove workaround after resolving KF-256
+    if [[ "$image" =~ .*notebook-controller.* ]] || [[ "$image" =~ .*zeppelin-operator.* ]]; then
+        tag=$image
+    else
+        tag=$(echo $image | sed 's:gcr.io/mapr-252711/::')
+        tag=$(echo $tag | sed 's:quay.io/k8scsi/::')
+    fi
+	tag="$ip:5000/$tag"
+ 	tags+=($tag)
+	echo "docker tag $image $tag"
+	docker tag $image $tag
+    echo "==================================================================================================================="
+done
+
+echo ''
+echo ''
+echo ''
+echo ''
+echo ''
+
+echo "Push the images to the airgap registry"
+for tag in "${tags[@]}"
+do
+	echo "docker push $tag"
+	docker push $tag
+    echo "==================================================================================================================="
+done
+
+echo ''
+echo ''
+echo ''
+echo ''
+echo ''
+
+echo "Remove the locally-cached images"
+for image in "${images[@]}"
+do
+	echo "docker remove $image"
+	docker image remove $image
+    echo "==================================================================================================================="
+done
+for tag in "${tags[@]}"
+do
+	echo "docker image remove $tag"
+	docker image remove $tag
+    echo "==================================================================================================================="
+done
+
+

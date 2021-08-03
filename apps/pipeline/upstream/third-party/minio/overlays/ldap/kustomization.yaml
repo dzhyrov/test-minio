@@ -3,6 +3,7 @@ kind: Kustomization
 bases:
 - ../../base
 resources:
+- sa.yaml
 - cr.yaml
 - crb.yaml
 patchesStrategicMerge:
