@@ -31,6 +31,8 @@ spec:
           value: "$(http_proxy)"
         - name: https_proxy
           value: "$(https_proxy)"
+        - name: AIRGAP_REGISTRY
+          value: "$(airgapRegistry)"
       restartPolicy: Never
       volumes:
       - name: entrypoint
