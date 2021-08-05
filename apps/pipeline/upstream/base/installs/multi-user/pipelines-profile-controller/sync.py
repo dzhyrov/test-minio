@@ -23,6 +23,12 @@ mlpipeline_minio_access_key = base64.b64encode(
     bytes(os.environ.get("MINIO_ACCESS_KEY"), 'utf-8')).decode('utf-8')
 mlpipeline_minio_secret_key = base64.b64encode(
     bytes(os.environ.get("MINIO_SECRET_KEY"), 'utf-8')).decode('utf-8')
+mlpipeline_minio_host = base64.b64encode(
+    bytes(os.environ.get("MINIO_HOST"), 'utf-8')).decode('utf-8')
+mlpipeline_minio_port = base64.b64encode(
+    bytes(os.environ.get("MINIO_PORT"), 'utf-8')).decode('utf-8')
+mlpipeline_minio_secure = base64.b64encode(
+    bytes(os.environ.get("MINIO_SECURE"), 'utf-8')).decode('utf-8')
 airgapRegistry = os.environ["airgapRegistry"]
 
 
@@ -259,12 +265,15 @@ class Controller(BaseHTTPRequestHandler):
             "apiVersion": "v1",
             "kind": "Secret",
             "metadata": {
-                "name": "mlpipeline-minio-artifact",
+                "name": "minio-params",
                 "namespace": namespace,
             },
             "data": {
                 "accesskey": mlpipeline_minio_access_key,
                 "secretkey": mlpipeline_minio_secret_key,
+                "host": mlpipeline_minio_host,
+                "port": mlpipeline_minio_port,
+                "secure": mlpipeline_minio_secure
             },
         })
 
