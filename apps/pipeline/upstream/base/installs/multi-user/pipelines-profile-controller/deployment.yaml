@@ -32,6 +32,21 @@ spec:
             secretKeyRef:
               name: minio-params
               key: secretkey
+        - name: MINIO_HOST
+          valueFrom:
+            secretKeyRef:
+              name: minio-params
+              key: host
+        - name: MINIO_PORT
+          valueFrom:
+            secretKeyRef:
+              name: minio-params
+              key: port
+        - name: MINIO_SECURE
+          valueFrom:
+            secretKeyRef:
+              name: minio-params
+              key: secure
         - name: airgapRegistry
           value: $(airgapRegistry)
         volumeMounts:
