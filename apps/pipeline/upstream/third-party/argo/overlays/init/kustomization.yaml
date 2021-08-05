@@ -5,8 +5,8 @@ bases:
 - ../image-pull-secret
 
 resources:
-- cr.yaml
-- crb.yaml
+- role.yaml
+- rb.yaml
 
 patchesStrategicMerge:
 - workflow-controller-deployment-patch.yaml
