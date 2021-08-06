@@ -6,8 +6,6 @@ resources:
 - minio-pvc.yaml
 - minio-service.yaml
 
-namespace: kubeflow
-
 configurations:
 - params.yaml
 
@@ -15,18 +13,3 @@ images:
 - name: gcr.io/ml-pipeline/minio
   newName: $(airgapRegistry)gcr.io/ml-pipeline/minio
   newTag: RELEASE.2019-08-14T20-37-41Z-license-compliance
-
-configMapGenerator:
-- name: minio-parameters
-  envs:
-  - params.env
-generatorOptions:
-  disableNameSuffixHash: true
-vars:
-- name: airgapRegistry
-  objref:
-    kind: ConfigMap
-    name: minio-parameters
-    apiVersion: v1
-  fieldref:
-    fieldpath: data.AIRGAP_REGISTRY

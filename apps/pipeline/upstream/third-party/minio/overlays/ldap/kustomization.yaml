@@ -1,0 +1,38 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+bases:
+- ../../base
+resources:
+- sa.yaml
+- cr.yaml
+- crb.yaml
+patchesStrategicMerge:
+- deployment.yaml
+
+namespace: kubeflow
+
+images:
+- name: minio-init
+  newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/init
+  newTag: latestC
+- name: minio
+  newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/server
+  newTag: latestC
+
+configurations:
+- params.yaml
+
+configMapGenerator:
+- name: minio-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: minio-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY

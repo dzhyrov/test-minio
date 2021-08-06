@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+# set -e
 
 KF_JOBS_NS=${KF_JOBS_NS:-kubeflow-jobs}
 RETRY_TIMEOUT=8
@@ -8,6 +8,14 @@ MANIFESTS_DIR=manifests
 CURRENT_DIR=$(pwd)
 EXTERNAL_MINIO_SECRET_NAME=kubeflow-external-minio
 EXTERNAL_MINIO_SECRET_NAMESPACE=kubeflow-minio
+
+minio_needs_to_be_installed()
+{
+    kubectl get secret -n ${EXTERNAL_MINIO_SECRET_NAMESPACE} ${EXTERNAL_MINIO_SECRET_NAME} --ignore-not-found | grep . > /dev/null
+    echo $?
+}
+
+SHOULD_INSTALL_MINIO=$(minio_needs_to_be_installed)
 
 DISABLE_ISTIO=${DISABLE_ISTIO:-false}
 DISABLE_NOTEBOOKSERVERS_LINK=${DISABLE_NOTEBOOKSERVERS_LINK:-false}
@@ -55,7 +63,8 @@ deploy_knative()
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-crds/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-crds/base | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-install/base | kubectl apply -f -
+    ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-install/overlays/image-pull-secret | kubectl apply -f -
 }
 
 deploy_cluster_local_gateway()
@@ -71,10 +80,11 @@ deploy_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/kubeflow-istio-resources/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/overlays/image-pull-secret | kubectl apply -f - && \
     
-    kubectl get secret -n ${EXTERNAL_MINIO_SECRET_NAMESPACE} ${EXTERNAL_MINIO_SECRET_NAME} --ignore-not-found | grep . > /dev/null || {
-        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/base | kubectl apply -f -
+    if [ $SHOULD_INSTALL_MINIO -ne "0" ]; then
+        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/overlays/ldap | kubectl apply -f -
         ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio/options/istio | kubectl apply -f -
-    }
+        ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/third-party/minio-console/base | kubectl apply -f -
+    fi
     
     ./kustomize build ${MANIFESTS_DIR}/apps/kfserving/upstream/overlays/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/apps/katib/upstream/installs/katib-with-kubeflow | kubectl apply -f -
