@@ -4,8 +4,8 @@ bases:
 - ../../base
 resources:
 - sa.yaml
-- role.yaml
-- rb.yaml
+- cr.yaml
+- crb.yaml
 patchesStrategicMerge:
 - deployment.yaml
 
