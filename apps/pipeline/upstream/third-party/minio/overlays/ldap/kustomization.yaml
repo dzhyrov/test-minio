@@ -15,12 +15,9 @@ images:
 - name: minio-init
   newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/init
   newTag: latestC
-# - name: minio
-#   newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/server
-#   newTag: latestC
 - name: minio
-  newName: $(airgapRegistry)daniilzhyrov/minio-server
-  newTag: latest
+  newName: $(airgapRegistry)gcr.io/mapr-252711/kubeflow/minio/server
+  newTag: latestC
 
 configurations:
 - params.yaml
