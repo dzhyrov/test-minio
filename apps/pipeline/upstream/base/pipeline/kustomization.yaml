@@ -31,6 +31,8 @@ resources:
   - ml-pipeline-visualization-service.yaml
   - pipeline-runner-role.yaml
   - pipeline-runner-rolebinding.yaml
+  - pipeline-runner-clusterrole.yaml
+  - pipeline-runner-clusterrolebinding.yaml
   - pipeline-runner-sa.yaml
   - container-builder-sa.yaml
   - viewer-sa.yaml

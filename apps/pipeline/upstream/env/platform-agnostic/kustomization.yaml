@@ -4,8 +4,8 @@ kind: Kustomization
 bases:
   - ../../base/installs/generic
   - ../../base/metadata/base
+  - ../../base/metadata/options/istio
   - ../../third-party/argo/installs/namespace
-  - ../../third-party/minio/base
   - ../../third-party/mysql/base
 
 # Identifier for application manager to apply ownerReference.
@@ -17,3 +17,18 @@ commonLabels:
 # !!! If you want to customize the namespace,
 # please also update base/cache-deployer/cluster-scoped/cache-deployer-clusterrolebinding.yaml
 namespace: kubeflow
+
+configMapGenerator:
+- name: pipeline-parameters
+  envs:
+  - params.env
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: pipeline-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY

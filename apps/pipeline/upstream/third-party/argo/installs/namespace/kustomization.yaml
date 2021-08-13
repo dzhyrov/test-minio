@@ -7,7 +7,7 @@ kind: Kustomization
 # * this separates cluster-scoped resources to its own folder.
 
 bases:
-- ../../base
+- ../../overlays/init
 - ../../upstream/manifests/namespace-install/workflow-controller-rbac
 
 patchesJson6902:
