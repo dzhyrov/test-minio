@@ -3,6 +3,6 @@
   "port": "9000",
   "insecure": "true",
   "secure": "false",
-  "accesskey": "minio",
-  "secretkey": "minio123"
+  "accesskey": "minioadmin",
+  "secretkey": "minioadmin"
 }

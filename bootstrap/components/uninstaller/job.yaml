@@ -23,6 +23,8 @@ spec:
           value: "$(MANIFESTS_LOCATION)"
         - name: KF_JOBS_NS
           value: "$(KF_JOBS_NS)"
+        - name: DISABLE_ISTIO
+          value: "$(DISABLE_ISTIO)"
       restartPolicy: Never
       volumes:
       - name: entrypoint

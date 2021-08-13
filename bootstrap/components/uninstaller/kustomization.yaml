@@ -39,5 +39,12 @@ vars:
     apiVersion: v1
   fieldref:
     fieldpath: data.MANIFESTS_LOCATION
+- name: DISABLE_ISTIO
+  objref:
+    kind: ConfigMap
+    name: kf-uninstaller-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.DISABLE_ISTIO
 configurations:
 - params.yaml

@@ -1,5 +1,5 @@
 #!/bin/sh
-# set -e
+set -e
 
 KF_JOBS_NS=${KF_JOBS_NS:-kubeflow-jobs}
 RETRY_TIMEOUT=8
@@ -78,6 +78,8 @@ deploy_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-roles/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/kubeflow-istio-resources/base | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/cluster-scoped-resources | kubectl apply -f - && \
+    kubectl wait --for condition=established --timeout=60s crd/applications.app.k8s.io && \
     ./kustomize build ${MANIFESTS_DIR}/apps/pipeline/upstream/overlays/image-pull-secret | kubectl apply -f - && \
     
     if [ $SHOULD_INSTALL_MINIO -ne "0" ]; then
@@ -112,6 +114,11 @@ deploy_kf_services()
     ./kustomize build ${MANIFESTS_DIR}/contrib/seldon/seldon-core-operator/overlays/application | kubectl apply -f -
 }
 
+enable_kf_dashboard_url_in_tenant_ui()
+{
+   ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/hpecpconfig-patch | kubectl apply -f - -n ${KF_JOBS_NS}
+}
+
 install()
 {    
     printf "\nTrying to deploy cert manager...\n\n"
@@ -142,6 +149,9 @@ install()
         fi
         printf "\n*** Retrying to deploy kubeflow services... ***\n\n"; sleep ${RETRY_TIMEOUT};
     done
+  
+    printf "\nTrying to enable KF URL in tenant UI...\n\n"
+    while ! enable_kf_dashboard_url_in_tenant_ui; do printf "\n*** Retrying to enable KF URL in tenant UI... ***\n\n"; sleep ${RETRY_TIMEOUT}; done
 }
 
 if test_env_vars; then

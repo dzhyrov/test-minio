@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hpecpconfig-patch
+spec:
+  template:
+    spec:
+      serviceAccountName: kf-hpecpconfig-patcher
+      containers:
+        - name: script
+          image: bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash"]
+          args:
+            - "/mnt/hpecpconfig-patch/entrypoint.sh"
+          volumeMounts:
+            - mountPath: /mnt/hpecpconfig-patch
+              name: hpecpconfig-patch
+      volumes:
+        - name: hpecpconfig-patch
+          configMap:
+            name: hpecpconfig-patch
+      restartPolicy: Never

@@ -5058,6 +5058,91 @@ spec:
   selfSigned: {}
 ---
 # Source: seldon-core-operator/templates/webhook.yaml
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: kubeflow/seldon-serving-cert
+  creationTimestamp: null
+  labels:
+    app: seldon
+    app.kubernetes.io/instance: 'seldon-core'
+    app.kubernetes.io/name: 'seldon-core-operator'
+    app.kubernetes.io/version: '1.6.0'
+  name: seldon-mutating-webhook-configuration-kubeflow
+webhooks:
+- clientConfig:
+    caBundle: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCRENDQWV5Z0F3SUJBZ0lRZkllWkRmeXpad1M0MTRjd0JxVXd3akFOQmdrcWhraUc5dzBCQVFzRkFEQWMKTVJvd0dBWURWUVFERXhGamRYTjBiMjB0YldWMGNtbGpjeTFqWVRBZUZ3MHlNVEF5TVRJeE9URXlNVE5hRncweQpNakF5TVRJeE9URXlNVE5hTUJ3eEdqQVlCZ05WQkFNVEVXTjFjM1J2YlMxdFpYUnlhV056TFdOaE1JSUJJakFOCkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXFFWGZpeDZoRk9BK2U0a2ZtTVJnd0IzUXFCeGgKK2c5SjNxVlpxYmF0VnZsWGhOTHR1aDVndDd1OFBOM0ZSTWRxdzk0QTUwSjRlMFdQaVBPdXI3K2R5bzkrYXJQbQpCZXhhYnFncG9sSmE0MXJRYmVmNWFsUGhEMVQ4dW1LM2hhUTNkRVprY3g0MzhNbTdlK0EwbVpsU2RlN1BaL1lpCnlJYytTUnZEVG84MW5QanZLbEFxS0NwdkJNOEFPcVhhaGJJdTN6bUpFL1dPWFBEemticGdSMm51aDlRdVBLTVcKSnhUaisydysvMXo2dVNJR0ZWeExpdUo5UXVEckxkeUNqKy9mMkVJcjJnT0YxN29kSHRzM3d4S1drU2M5elBOWApwQkFoUDZmNUVxVFlQYnJkUmd3S3lsa0tiQnR2Wm1jQWovWGJER1phU1FEUklMYVE4N3FZRkFKZUh3SURBUUFCCm8wSXdRREFPQmdOVkhROEJBZjhFQkFNQ0FxUXdIUVlEVlIwbEJCWXdGQVlJS3dZQkJRVUhBd0VHQ0NzR0FRVUYKQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFKYXBKSDhBeTFuegpzVmhxUnRNdjJTSjR0VDZPWVVPckRjcmc0Q3VvRlBWY05GUGxneUdtclVQem1wWHkycWRFd1pxaGNOYXR1VGwyCnUxSE9tdnVIOERXM2xseVAwYlViUk1FQlBZY2xMRUZLMCt1OUh2dk14SGprU1drYmtCN0Irc280NktVcjl4Q08KWlY0NGtDb1I2S0NSd2dyd2tJREJ3NjR4V3VXcFgrek9ZRUtOK044TWNFU28wUWI1bUl5TTVNbFhPbWk2Uy9DUQpYc0hxN1NHenNxOVJYaWloejJqK0QxZWlzQmtGb3h2SHU3bmU1WVBpSnlIVzg0TmJZeHdSSFJNZmVEU2NtZlhVClJhbFhnemlmT3hoTU1VKzRuL1o3UnlHVzhmOXE3SW1VVTNRUWNJdGlvSUhkdXpnUGtBbExUcStjb05KTGFTUlEKRU5uWElIZ2VoVUU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K'
+    service:
+      name: seldon-webhook-service
+      namespace: 'kubeflow'
+      path: /mutate-machinelearning-seldon-io-v1-seldondeployment
+  failurePolicy: Fail
+  name: v1.mseldondeployment.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: seldon.io/controller-id
+      operator: DoesNotExist
+    matchLabels:
+      serving.kubeflow.org/inferenceservice: enabled
+  rules:
+  - apiGroups:
+    - machinelearning.seldon.io
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - seldondeployments
+- clientConfig:
+    caBundle: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCRENDQWV5Z0F3SUJBZ0lRZkllWkRmeXpad1M0MTRjd0JxVXd3akFOQmdrcWhraUc5dzBCQVFzRkFEQWMKTVJvd0dBWURWUVFERXhGamRYTjBiMjB0YldWMGNtbGpjeTFqWVRBZUZ3MHlNVEF5TVRJeE9URXlNVE5hRncweQpNakF5TVRJeE9URXlNVE5hTUJ3eEdqQVlCZ05WQkFNVEVXTjFjM1J2YlMxdFpYUnlhV056TFdOaE1JSUJJakFOCkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXFFWGZpeDZoRk9BK2U0a2ZtTVJnd0IzUXFCeGgKK2c5SjNxVlpxYmF0VnZsWGhOTHR1aDVndDd1OFBOM0ZSTWRxdzk0QTUwSjRlMFdQaVBPdXI3K2R5bzkrYXJQbQpCZXhhYnFncG9sSmE0MXJRYmVmNWFsUGhEMVQ4dW1LM2hhUTNkRVprY3g0MzhNbTdlK0EwbVpsU2RlN1BaL1lpCnlJYytTUnZEVG84MW5QanZLbEFxS0NwdkJNOEFPcVhhaGJJdTN6bUpFL1dPWFBEemticGdSMm51aDlRdVBLTVcKSnhUaisydysvMXo2dVNJR0ZWeExpdUo5UXVEckxkeUNqKy9mMkVJcjJnT0YxN29kSHRzM3d4S1drU2M5elBOWApwQkFoUDZmNUVxVFlQYnJkUmd3S3lsa0tiQnR2Wm1jQWovWGJER1phU1FEUklMYVE4N3FZRkFKZUh3SURBUUFCCm8wSXdRREFPQmdOVkhROEJBZjhFQkFNQ0FxUXdIUVlEVlIwbEJCWXdGQVlJS3dZQkJRVUhBd0VHQ0NzR0FRVUYKQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFKYXBKSDhBeTFuegpzVmhxUnRNdjJTSjR0VDZPWVVPckRjcmc0Q3VvRlBWY05GUGxneUdtclVQem1wWHkycWRFd1pxaGNOYXR1VGwyCnUxSE9tdnVIOERXM2xseVAwYlViUk1FQlBZY2xMRUZLMCt1OUh2dk14SGprU1drYmtCN0Irc280NktVcjl4Q08KWlY0NGtDb1I2S0NSd2dyd2tJREJ3NjR4V3VXcFgrek9ZRUtOK044TWNFU28wUWI1bUl5TTVNbFhPbWk2Uy9DUQpYc0hxN1NHenNxOVJYaWloejJqK0QxZWlzQmtGb3h2SHU3bmU1WVBpSnlIVzg0TmJZeHdSSFJNZmVEU2NtZlhVClJhbFhnemlmT3hoTU1VKzRuL1o3UnlHVzhmOXE3SW1VVTNRUWNJdGlvSUhkdXpnUGtBbExUcStjb05KTGFTUlEKRU5uWElIZ2VoVUU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K'
+    service:
+      name: seldon-webhook-service
+      namespace: 'kubeflow'
+      path: /mutate-machinelearning-seldon-io-v1alpha2-seldondeployment
+  failurePolicy: Fail
+  name: v1alpha2.mseldondeployment.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: seldon.io/controller-id
+      operator: DoesNotExist
+    matchLabels:
+      serving.kubeflow.org/inferenceservice: enabled
+  rules:
+  - apiGroups:
+    - machinelearning.seldon.io
+    apiVersions:
+    - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - seldondeployments
+- clientConfig:
+    caBundle: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCRENDQWV5Z0F3SUJBZ0lRZkllWkRmeXpad1M0MTRjd0JxVXd3akFOQmdrcWhraUc5dzBCQVFzRkFEQWMKTVJvd0dBWURWUVFERXhGamRYTjBiMjB0YldWMGNtbGpjeTFqWVRBZUZ3MHlNVEF5TVRJeE9URXlNVE5hRncweQpNakF5TVRJeE9URXlNVE5hTUJ3eEdqQVlCZ05WQkFNVEVXTjFjM1J2YlMxdFpYUnlhV056TFdOaE1JSUJJakFOCkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQXFFWGZpeDZoRk9BK2U0a2ZtTVJnd0IzUXFCeGgKK2c5SjNxVlpxYmF0VnZsWGhOTHR1aDVndDd1OFBOM0ZSTWRxdzk0QTUwSjRlMFdQaVBPdXI3K2R5bzkrYXJQbQpCZXhhYnFncG9sSmE0MXJRYmVmNWFsUGhEMVQ4dW1LM2hhUTNkRVprY3g0MzhNbTdlK0EwbVpsU2RlN1BaL1lpCnlJYytTUnZEVG84MW5QanZLbEFxS0NwdkJNOEFPcVhhaGJJdTN6bUpFL1dPWFBEemticGdSMm51aDlRdVBLTVcKSnhUaisydysvMXo2dVNJR0ZWeExpdUo5UXVEckxkeUNqKy9mMkVJcjJnT0YxN29kSHRzM3d4S1drU2M5elBOWApwQkFoUDZmNUVxVFlQYnJkUmd3S3lsa0tiQnR2Wm1jQWovWGJER1phU1FEUklMYVE4N3FZRkFKZUh3SURBUUFCCm8wSXdRREFPQmdOVkhROEJBZjhFQkFNQ0FxUXdIUVlEVlIwbEJCWXdGQVlJS3dZQkJRVUhBd0VHQ0NzR0FRVUYKQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFKYXBKSDhBeTFuegpzVmhxUnRNdjJTSjR0VDZPWVVPckRjcmc0Q3VvRlBWY05GUGxneUdtclVQem1wWHkycWRFd1pxaGNOYXR1VGwyCnUxSE9tdnVIOERXM2xseVAwYlViUk1FQlBZY2xMRUZLMCt1OUh2dk14SGprU1drYmtCN0Irc280NktVcjl4Q08KWlY0NGtDb1I2S0NSd2dyd2tJREJ3NjR4V3VXcFgrek9ZRUtOK044TWNFU28wUWI1bUl5TTVNbFhPbWk2Uy9DUQpYc0hxN1NHenNxOVJYaWloejJqK0QxZWlzQmtGb3h2SHU3bmU1WVBpSnlIVzg0TmJZeHdSSFJNZmVEU2NtZlhVClJhbFhnemlmT3hoTU1VKzRuL1o3UnlHVzhmOXE3SW1VVTNRUWNJdGlvSUhkdXpnUGtBbExUcStjb05KTGFTUlEKRU5uWElIZ2VoVUU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K'
+    service:
+      name: seldon-webhook-service
+      namespace: 'kubeflow'
+      path: /mutate-machinelearning-seldon-io-v1alpha3-seldondeployment
+  failurePolicy: Fail
+  name: v1alpha3.mseldondeployment.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: seldon.io/controller-id
+      operator: DoesNotExist
+    matchLabels:
+      serving.kubeflow.org/inferenceservice: enabled
+  rules:
+  - apiGroups:
+    - machinelearning.seldon.io
+    apiVersions:
+    - v1alpha3
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - seldondeployments
 ---
 
 apiVersion: admissionregistration.k8s.io/v1beta1

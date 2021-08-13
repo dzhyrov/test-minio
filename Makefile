@@ -15,6 +15,12 @@
 
 # Short commit hash for kubeflow tar name
 CURRENT_COMMIT_HASH = $(shell git branch --show-current)-$(shell git log -n 1 --format=%h)
+# Default image and tag for kubeflow-install
+KF_INSTALL_IMAGE ?= gcr.io/mapr-252711/kf-ecp-5.3.0/kubeflow-install
+KF_INSTALL_TAG ?= latest-dev
+# tar parameters for kubeflow-install-tarball
+KF_INSTALL_ARCHIVE_NAME ?= kubeflow-$(CURRENT_COMMIT_HASH).tar
+KF_INSTALL_ARCHIVE_PARAMS ?= -cf
 
 # Create tarball from files used in bootstrap install script
 kubeflow-install-tarball:
@@ -23,6 +29,16 @@ kubeflow-install-tarball:
 	cp -r common build/_output/bootstrap/private-manifests
 	cp -r apps build/_output/bootstrap/private-manifests
 	cp -r contrib build/_output/bootstrap/private-manifests
-	tar -C build/_output/bootstrap/ -cvf kubeflow-$(CURRENT_COMMIT_HASH).tar --exclude-vcs private-manifests/bootstrap \
+	tar -C build/_output/bootstrap/ $(KF_INSTALL_ARCHIVE_PARAMS) $(KF_INSTALL_ARCHIVE_NAME) --exclude-vcs private-manifests/bootstrap \
 						private-manifests/apps private-manifests/common private-manifests/contrib
 	rm -r build
+
+#Set variables for kf-installer-image(const)
+vars-for-kf-installer-image:
+	$(eval KF_INSTALL_ARCHIVE_PARAMS = -czf)
+	$(eval KF_INSTALL_ARCHIVE_NAME = ./kf-installer/manifests.tar.gz)
+
+# Create kf-installer image for kf-installer job
+kf-installer-image: vars-for-kf-installer-image kubeflow-install-tarball
+	docker build -t $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG) ./kf-installer
+	rm -r $(KF_INSTALL_ARCHIVE_NAME)
