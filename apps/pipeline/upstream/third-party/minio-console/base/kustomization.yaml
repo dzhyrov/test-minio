@@ -22,7 +22,7 @@ vars:
     name: pipeline-minio-parameters
     apiVersion: v1
   fieldref:
-    fieldpath: data.airgapRegistry
+    fieldpath: data.AIRGAP_REGISTRY
 images:
 - name: minio-console
   newTag: latestC

@@ -21,6 +21,20 @@ spec:
         image: minio-init
       containers:
       - args: null
-        env: null
+        env:
+        - name: MINIO_ACCESS_KEY
+          $patch: delete
+        - name: MINIO_SECRET_KEY
+          $patch: delete
+        - name: ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-params
+              key: accesskey
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: minio-params
+              key: secretkey
         image: minio
         name: minio

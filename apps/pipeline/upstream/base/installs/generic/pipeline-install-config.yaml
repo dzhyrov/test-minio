@@ -26,4 +26,4 @@ data:
   ## cached steps with. Will be used to echo a message announcing that 
   ## the cached step result will be used. If not set it will default to 
   ## 'gcr.io/google-containers/busybox'
-  cacheImage: "gcr.io/google-containers/busybox"
+  cacheImage: "$(airgapRegistry)gcr.io/google-containers/busybox"

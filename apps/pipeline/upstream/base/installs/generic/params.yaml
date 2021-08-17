@@ -8,3 +8,5 @@ varReference:
   kind: Application
 - path: spec/http/route/destination/host
   kind: VirtualService
+- path: data/cacheImage
+  kind: ConfigMap
