@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  namespace: knative-serving
+spec:
+  template:
+    spec:
+      containers:
+      - env:
+        - name: http_proxy
+          value: $(http_proxy)
+        - name: https_proxy
+          value: $(https_proxy)

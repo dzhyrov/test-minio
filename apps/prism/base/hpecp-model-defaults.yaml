@@ -1,0 +1,7 @@
+apiVersion: deployment.hpe.com/v1alpha1
+kind: HPECPModelDefault
+metadata:
+  name: prism-config-defaults
+  namespace: $(namespace)
+spec:
+  defaultenv: []

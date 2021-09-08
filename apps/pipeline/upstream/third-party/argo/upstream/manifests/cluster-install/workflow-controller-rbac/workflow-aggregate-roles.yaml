@@ -29,7 +29,7 @@ kind: ClusterRole
 metadata:
   name: argo-aggregate-to-edit
   labels:
-    rbac.authorization.k8s.io/aggregate-to-edit: "true"
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-edit: "true"
 rules:
 - apiGroups:
   - argoproj.io
@@ -60,7 +60,7 @@ kind: ClusterRole
 metadata:
   name: argo-aggregate-to-admin
   labels:
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.kubeflow.org/aggregate-to-kubeflow-admin: "true"
 rules:
 - apiGroups:
   - argoproj.io

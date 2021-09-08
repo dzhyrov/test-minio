@@ -34,6 +34,11 @@ spec:
               configMapKeyRef:
                 name: config
                 key: ISTIO_GATEWAY
+          - name: AIRGAP_REGISTRY
+            valueFrom:
+              configMapKeyRef:
+                name: config
+                key: AIRGAP_REGISTRY
         imagePullPolicy: Always
         livenessProbe:
           httpGet:

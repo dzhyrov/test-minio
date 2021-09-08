@@ -18,6 +18,7 @@ CURRENT_COMMIT_HASH = $(shell git branch --show-current)-$(shell git log -n 1 --
 # Default image and tag for kubeflow-install
 KF_INSTALL_IMAGE ?= gcr.io/mapr-252711/kf-ecp-5.3.0/kubeflow-install
 KF_INSTALL_TAG ?= latest-dev
+KF_INSTALL_HASH_TAG = $(shell git branch --show-current)-$(shell git log -n 1 --format=%h)-$(shell git diff | shasum -a256 | cut -c -6)
 # tar parameters for kubeflow-install-tarball
 KF_INSTALL_ARCHIVE_NAME ?= kubeflow-$(CURRENT_COMMIT_HASH).tar
 KF_INSTALL_ARCHIVE_PARAMS ?= -cf
@@ -38,7 +39,28 @@ vars-for-kf-installer-image:
 	$(eval KF_INSTALL_ARCHIVE_PARAMS = -czf)
 	$(eval KF_INSTALL_ARCHIVE_NAME = ./kf-installer/manifests.tar.gz)
 
-# Create kf-installer image for kf-installer job
+# Create kf-installer images for kf-installer job
 kf-installer-image: vars-for-kf-installer-image kubeflow-install-tarball
-	docker build -t $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG) ./kf-installer
+	docker build -t $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG) -t $(KF_INSTALL_IMAGE):$(KF_INSTALL_HASH_TAG) ./kf-installer
 	rm -r $(KF_INSTALL_ARCHIVE_NAME)
+	
+	@echo Built $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG)
+	@echo Built $(KF_INSTALL_IMAGE):$(KF_INSTALL_HASH_TAG)
+
+# Push image with latest tag
+push-latest-tag:
+	docker push $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG)
+	@echo Pushed $(KF_INSTALL_IMAGE):$(KF_INSTALL_TAG)
+
+# Push image with branch hash tag
+push-branch-tag:
+	docker push $(KF_INSTALL_IMAGE):$(KF_INSTALL_HASH_TAG)
+	@echo Pushed $(KF_INSTALL_IMAGE):$(KF_INSTALL_HASH_TAG)
+
+# Push kf-installer images
+push-all: push-latest-tag push-branch-tag
+	@echo Pushed all
+
+# Build and push kf-installer images
+build-and-push-all: kf-installer-image push-all
+	@echo Built and Pushed

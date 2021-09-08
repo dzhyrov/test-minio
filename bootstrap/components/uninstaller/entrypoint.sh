@@ -36,22 +36,27 @@ delete_istio()
 
 delete_authservices()
 {
-    ./kustomize build ${MANIFESTS_DIR}/common/oidc-authservice/base | kubectl delete -f -
     ./kustomize build ${MANIFESTS_DIR}/common/dex/overlays/istio | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/common/oidc-authservice/base | kubectl delete -f -
 }
 
 delete_knative()
 {
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-crds/base | kubectl delete -f -
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/base | kubectl delete -f -
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-crds/base | kubectl delete -f -
-    ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl delete -f - 
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-install/overlays/image-pull-secret | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-crds/base | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/base | kubectl delete -f -
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-crds/base | kubectl delete -f -
 }
 
 delete_cluster_local_gateway()
 {
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/cluster-local-gateway/base | kubectl delete -f -
+}
+
+delete_prism()
+{
+    ./kustomize build ${MANIFESTS_DIR}/apps/prism/base | kubectl delete -f -
 }
 
 delete_kf_services()
@@ -93,7 +98,13 @@ delete_kf_url()
 }
 
 if test_env_vars; then
-    curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    if [ -r /usr/share/ca-certificates/kf-jobs/kf-jobs-tls.crt ]; then
+        update-ca-certificates
+        curl --cacert /usr/share/ca-certificates/kf-jobs/kf-jobs-tls.crt -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    else
+        curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    fi
+    
     mkdir manifests
     if tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1; then
         printf "\nManifests downloaded successfully\n\n"
@@ -102,10 +113,14 @@ if test_env_vars; then
         exit 1
     fi
 
+    unset http_proxy
+    unset https_proxy
+
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/installer | kubectl delete -f - -n ${KF_JOBS_NS} --ignore-not-found
 
     delete_kf_url
-
+    printf "\nDeleting prism...\n\n"
+    delete_prism
     printf "\nTrying to delete kubeflow services...\n\n"
     export -f delete_kf_services
     while ! timeout -s SIGINT 4m bash -c delete_kf_services ${MANIFESTS_DIR}; do printf "\n*** Retrying to delete kubeflow services... ***\n\n"; done

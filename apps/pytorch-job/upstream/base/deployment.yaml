@@ -19,6 +19,7 @@ spec:
         - --alsologtostderr
         - -v=1
         - --monitoring-port=8443
+        - --init-container-image=$(airgapRegistry)alpine:3.10
         env:
         - name: MY_POD_NAMESPACE
           valueFrom:

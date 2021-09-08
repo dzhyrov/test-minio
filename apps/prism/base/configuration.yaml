@@ -1,0 +1,21 @@
+varReference:
+- path: metadata/name
+  kind: Namespace
+- path: metadata/namespace
+  kind: ConfigMap
+- path: metadata/namespace
+  kind: ServiceAccount
+- path: metadata/namespace
+  kind: Service
+- path: metadata/namespace
+  kind: Role
+- path: metadata/namespace
+  kind: RoleBinding
+- path: metadata/namespace
+  kind: Deployment
+- path: subjects/namespace
+  kind: ClusterRoleBinding
+- path: metadata/namespace
+  kind: HPECPModelDefault
+- path: spec/template/spec/containers/image
+  kind: Deployment 

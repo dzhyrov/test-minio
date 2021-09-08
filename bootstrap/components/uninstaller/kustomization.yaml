@@ -46,5 +46,19 @@ vars:
     apiVersion: v1
   fieldref:
     fieldpath: data.DISABLE_ISTIO
+- name: http_proxy
+  objref:
+    kind: ConfigMap
+    name: kf-uninstaller-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.HTTP_PROXY
+- name: https_proxy
+  objref:
+    kind: ConfigMap
+    name: kf-uninstaller-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.HTTPS_PROXY
 configurations:
 - params.yaml

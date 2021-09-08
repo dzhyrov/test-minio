@@ -8,6 +8,7 @@ spec:
       initContainers:
       - name: config
         image: argo-init
+        imagePullPolicy: Always
         volumeMounts:
         - mountPath: /etc/minio-params
           name: minio-params

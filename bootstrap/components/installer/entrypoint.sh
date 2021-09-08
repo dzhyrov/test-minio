@@ -15,8 +15,6 @@ minio_needs_to_be_installed()
     echo $?
 }
 
-SHOULD_INSTALL_MINIO=$(minio_needs_to_be_installed)
-
 DISABLE_ISTIO=${DISABLE_ISTIO:-false}
 DISABLE_NOTEBOOKSERVERS_LINK=${DISABLE_NOTEBOOKSERVERS_LINK:-false}
 MANIFESTS_LOCATION=${MANIFESTS_LOCATION:-"file://${CURRENT_DIR}/static/manifests.tar.gz"}
@@ -61,7 +59,7 @@ deploy_authservices()
 deploy_knative()
 {
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-crds/base | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/base | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/overlays/proxy | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-crds/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-install/overlays/image-pull-secret | kubectl apply -f -
@@ -72,8 +70,15 @@ deploy_cluster_local_gateway()
     ./kustomize build ${MANIFESTS_DIR}/common/istio-1-9-0/cluster-local-gateway/base | kubectl apply -f -
 }
 
+deploy_prism()
+{
+    ./kustomize build ${MANIFESTS_DIR}/apps/prism/base | kubectl apply -f -
+}
+
 deploy_kf_services()
 {
+    SHOULD_INSTALL_MINIO=$(minio_needs_to_be_installed)
+
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-namespace/base | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/kubeflow | kubectl apply -f - && \
     ./kustomize build ${MANIFESTS_DIR}/common/kubeflow-roles/base | kubectl apply -f - && \
@@ -149,13 +154,22 @@ install()
         fi
         printf "\n*** Retrying to deploy kubeflow services... ***\n\n"; sleep ${RETRY_TIMEOUT};
     done
+
+    printf "\nDeploying prism...\n\n"
+    deploy_prism
   
     printf "\nTrying to enable KF URL in tenant UI...\n\n"
     while ! enable_kf_dashboard_url_in_tenant_ui; do printf "\n*** Retrying to enable KF URL in tenant UI... ***\n\n"; sleep ${RETRY_TIMEOUT}; done
 }
 
 if test_env_vars; then
-    curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    if [ -r /usr/share/ca-certificates/kf-jobs/kf-jobs-tls.crt ]; then
+        update-ca-certificates
+        curl --cacert /usr/share/ca-certificates/kf-jobs/kf-jobs-tls.crt -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    else
+        curl -Lo ${MANIFESTS_DIR}.tar.gz ${MANIFESTS_LOCATION}
+    fi
+    
     mkdir manifests
     if tar -xf ${MANIFESTS_DIR}.tar.gz -C ${MANIFESTS_DIR} --strip-components 1; then
         printf "\nManifests downloaded successfully\n\n"
@@ -163,6 +177,8 @@ if test_env_vars; then
         printf "\nManifests download failed\n\n"
         exit 1
     fi
+    export proxy_http=http_proxy
+    export proxy_https=https_proxy
     unset http_proxy
     unset https_proxy
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/minio-config | kubectl apply -f - -n ${KF_JOBS_NS}

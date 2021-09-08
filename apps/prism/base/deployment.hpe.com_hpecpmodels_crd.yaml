@@ -1,0 +1,142 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: hpecpmodels.deployment.hpe.com
+spec:
+  group: deployment.hpe.com
+  names:
+    kind: HPECPModel
+    listKind: HPECPModelList
+    plural: hpecpmodels
+    singular: hpecpmodel
+    shortNames:
+      - model
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      type: object
+      required: [apiVersion, kind, metadata, spec]
+      properties:
+        status:
+          type: object
+          properties:
+            state:
+              type: string
+            deployobject:
+              type: object
+        apiVersion:
+          type: string
+        kind:
+          type: string
+        metadata:
+          type: object
+        spec:
+        # we define the CR in the spec
+          type: object
+          required: [resources, replicas, deploytype]
+          # resources, endpoint, replicas are properties required for both KD and Seldon deployment, and in the future for other deployments
+          properties:
+            resources:
+            # resources define the minimum/maximum resources required for the deployment.
+            # These fields will be used to bring up the seldon deployment pods and KD deployment cluster
+              type: object
+              required: [limits]
+              properties:
+                limits:
+                  type: object
+                  required: [cpu]
+                  properties:
+                    memory:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    cpu:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    nvidia.com/gpu:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    amd.com/gpu:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    ephemeral-storage:                      
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                requests:
+                  type: object
+                  nullable: true
+                  properties:
+                    memory:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    cpu:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+                    ephemeral-storage:
+                      type: string
+                      pattern: '^([0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'
+            env:
+            # env variables like proxy, config variables for seldon and kd pods
+              type: array
+              items:
+                type: object
+                required: [name, value]
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                  value:
+                    type: string
+            connections:
+            # connections connect configmap or secret to the KDApp or the Seldon deployment.
+            # in case of Seldon, the secret will be used as initSecret to propagate sensitive info like s3 credentials into seldon pods
+            # in case of KD, the connections field will be attached as-is to the deployment kdcluster
+              type: object
+              properties:
+                configmaps:
+                  type: array
+                  items:
+                    type: string
+                secrets:
+                  type: array
+                  items:
+                    type: string
+            endpoint:
+            # the type of endpoint. By default, this will be REST. gRPC if the API is built to support that
+              type: string
+              pattern: '^REST$|^gRPC$'
+            replicas:
+            # the number of Seldon pods that are spawned as a deployment
+            # for KD, this will be the number of members for RESTServer role
+              type: integer
+              minimum: 1
+            deploytype:
+            # this object contains deployment framework-specific attributes like URL, image, and/or KDApp
+              type: object
+              required: [deployframework]
+              properties:
+                deployframework:
+                # the type of framework. One of seldon or kd
+                  type: string
+                  pattern: '^kd$|^seldon$'
+                deploysource:
+                # the sub-type of framework.
+                # for seldon, this specifies the server that shall be used. It is one out of mlflow,sklearn,tf,keras -> (1)
+                # for seldon, dockerfile denotes that the deployment needs to create a pod with the specified dockerfile -> (2)
+                # for kd, the applicable value is kdapp -> (3)
+                  type: string
+                  pattern: '^MLFLOW_SERVER$|^SKLEARN_SERVER$|^keras$|^tensorflow$|^dockerfile$|^kdapp$'
+                sourceurl:
+                # for a seldon deployment with a server (1), this will be a path to the source model. It can either be an s3, file, or http(s) location
+                  type: string
+                  pattern: '^(file|s3|https?)://.+$'
+                sourceimage:
+                # for a seldon deployment with dockerfile (2), this field will indicate the dockerimage
+                # for kd, this field will specify a kdapp to launch
+                  type: string
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true

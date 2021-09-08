@@ -81,6 +81,8 @@ spec:
             secretKeyRef:
               name: minio-params
               key: secretkey
+        - name: USER_AIRGAP_REGISTRY
+          value: $(userAirgapRegistry)
         image: gcr.io/mapr-252711/kf-ecp-5.3.0/ml-pipeline-api-server
         imagePullPolicy: IfNotPresent
         name: ml-pipeline-api-server

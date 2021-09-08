@@ -39,7 +39,7 @@ resources:
 images:
   - name: gcr.io/mapr-252711/kf-ecp-5.3.0/ml-pipeline-api-server
     newName: $(airgapRegistry)gcr.io/mapr-252711/kf-ecp-5.3.0/ml-pipeline-api-server
-    newTag: kfp-v1.5.0-branch-hpe-8ed24583
+    newTag: kfp-v1.5.0-branch-hpe-13952146
   - name: gcr.io/ml-pipeline/persistenceagent
     newName: $(airgapRegistry)gcr.io/ml-pipeline/persistenceagent
     newTag: 1.5.0
@@ -55,5 +55,18 @@ images:
   - name: gcr.io/ml-pipeline/visualization-server
     newName: $(airgapRegistry)gcr.io/ml-pipeline/visualization-server
     newTag: 1.5.0
+generatorOptions:
+ disableNameSuffixHash: true
+configMapGenerator:
+- name: kubeflow-pipelines-parameters
+  env: params.env
+vars:
+- name: userAirgapRegistry
+  objref:
+    kind: ConfigMap
+    name: kubeflow-pipelines-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.USER_AIRGAP_REGISTRY
 configurations:
 - params.yaml

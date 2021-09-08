@@ -277,6 +277,52 @@ class Controller(BaseHTTPRequestHandler):
             },
         })
 
+        desired_resources.append({
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {
+                "name": "workflow-role",
+                "namespace": namespace
+            },
+            "rules": [
+                {
+                "apiGroups": [
+                    ""
+                ],
+                "resources": [
+                    "pods",
+                    "pods/log"
+                ],
+                "verbs": [
+                    "get",
+                    "watch",
+                    "patch"
+                ]
+                }
+            ]
+        })
+
+        desired_resources.append({
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "RoleBinding",
+            "metadata": {
+                "name": "workflow-default-binding",
+                "namespace": namespace
+            },
+            "roleRef": {
+                "apiGroup": "rbac.authorization.k8s.io",
+                "kind": "Role",
+                "name": "workflow-role"
+            },
+            "subjects": [
+                {
+                "kind": "ServiceAccount",
+                "name": "default",
+                "namespace": namespace
+                }
+            ]
+        })
+
         return {"status": desired_status, "children": desired_resources}
 
     def do_POST(self):

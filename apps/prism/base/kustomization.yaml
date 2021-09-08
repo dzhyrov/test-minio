@@ -1,0 +1,59 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: $(namespace)
+resources:
+  - namespace.yaml
+  - deployment.hpe.com_hpecpmodeldefaults_crd.yaml
+  - deployment.hpe.com_hpecpmodels_crd.yaml
+  - role.yaml
+  - role_binding.yaml
+  - service_account.yaml
+  - local-role.yaml
+  - local-role-binding.yaml
+  - kftoken-depl.yaml
+  - operator.yaml
+  - hpecp-model-defaults.yaml
+images:
+  - name: bluedata/kftokenpod
+    newName: $(airgapRegistry)bluedata/kftokenpod
+    newTag: $(KFTOKEN_APP_IMAGE_TAG)
+  - name: bluedata/prism
+    newName: $(airgapRegistry)bluedata/prism
+    newTag: $(PRISM_OPERATOR_IMAGE_TAG) 
+configMapGenerator:
+- envs: 
+  - params.env
+  name: prism-parameters
+generatorOptions:
+  disableNameSuffixHash: true
+vars:
+- name: namespace
+  objref:
+    kind: ConfigMap
+    name: prism-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.namespace
+- name: airgapRegistry
+  objref:
+    kind: ConfigMap
+    name: prism-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.AIRGAP_REGISTRY
+- name: PRISM_OPERATOR_IMAGE_TAG
+  objref:
+    kind: ConfigMap
+    name: prism-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.PRISM_OPERATOR_IMAGE_TAG
+- name: KFTOKEN_APP_IMAGE_TAG
+  objref:
+    kind: ConfigMap
+    name: prism-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.KFTOKEN_APP_IMAGE_TAG
+configurations:
+- configuration.yaml

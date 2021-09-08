@@ -25,6 +25,13 @@ vars:
     apiVersion: v1
   fieldref:
     fieldpath: data.AIRGAP_REGISTRY
+- name: userAirgapRegistry
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.USER_AIRGAP_REGISTRY
 - name: KF_JOBS_NS
   objref:
     kind: ConfigMap

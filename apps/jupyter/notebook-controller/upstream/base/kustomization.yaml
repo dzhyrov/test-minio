@@ -3,18 +3,11 @@ kind: Kustomization
 resources:
 - ../default
 
-configMapGenerator:
-- name: notebook-controller-parameters
-  envs:
-  - params.env
-generatorOptions:
-  disableNameSuffixHash: true
-
 vars:
 - name: airgapRegistry
   objref:
     kind: ConfigMap
-    name: notebook-controller-parameters
+    name: config
     apiVersion: v1
   fieldref:
     fieldpath: data.AIRGAP_REGISTRY

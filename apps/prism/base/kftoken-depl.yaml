@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kftoken-app
+  namespace: $(namespace)
+  labels:
+    app: kftoken
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kftoken
+  template:
+    metadata:
+      labels:
+        app: kftoken
+    spec:
+      containers:
+        - image: bluedata/kftokenpod
+          name: kftoken
+          resources:
+            requests:
+              cpu: "1"
+            limits:
+              cpu: "1"
+          ports:
+            - containerPort: 10001
+              name: gunicorn
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kftoken-svc
+  namespace: $(namespace)
+  labels:
+    app: kftoken
+    hpecp.hpe.com/hpecp-internal-gateway: "true"
+spec:
+  type: NodePort
+  selector:
+    app: kftoken
+  ports:
+    - port: 10001
+      targetPort: 10001
