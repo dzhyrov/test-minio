@@ -177,8 +177,8 @@ if test_env_vars; then
         printf "\nManifests download failed\n\n"
         exit 1
     fi
-    export proxy_http=http_proxy
-    export proxy_https=https_proxy
+    export proxy_http=$http_proxy
+    export proxy_https=$https_proxy
     unset http_proxy
     unset https_proxy
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/minio-config | kubectl apply -f - -n ${KF_JOBS_NS}
