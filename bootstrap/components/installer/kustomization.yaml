@@ -74,5 +74,12 @@ vars:
     apiVersion: v1
   fieldref:
     fieldpath: data.HTTPS_PROXY
+- name: no_proxy
+  objref:
+    kind: ConfigMap
+    name: kf-installer-parameters
+    apiVersion: v1
+  fieldref:
+    fieldpath: data.NO_PROXY
 configurations:
 - params.yaml

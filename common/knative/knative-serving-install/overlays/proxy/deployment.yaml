@@ -13,3 +13,5 @@ spec:
           value: $(http_proxy)
         - name: https_proxy
           value: $(https_proxy)
+        - name: no_proxy
+          value: $(no_proxy)

@@ -177,10 +177,15 @@ if test_env_vars; then
         printf "\nManifests download failed\n\n"
         exit 1
     fi
+
     export proxy_http=$http_proxy
     export proxy_https=$https_proxy
+    export proxy_no=$no_proxy
+    
     unset http_proxy
     unset https_proxy
+    unset no_proxy
+    
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/minio-config | kubectl apply -f - -n ${KF_JOBS_NS}
     ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/dex-secret-ldap | kubectl apply -f - -n ${KF_JOBS_NS}
     install

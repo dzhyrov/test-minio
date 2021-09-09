@@ -7,8 +7,9 @@ MANIFESTS_LOCATION=${MANIFESTS_LOCATION:-"file:///opt/hpe/static/manifests.tar.g
 INTERNAL_TLS_SECRET_NAME=kf-jobs-cert-secret
 HTTP_PROXY=$http_proxy
 HTTPS_PROXY=$https_proxy
+NO_PROXY=$no_proxy
 
-export HTTP_PROXY HTTPS_PROXY
+export HTTP_PROXY HTTPS_PROXY NO_PROXY
 
 # Check if var is set https://stackoverflow.com/a/13864829 
 if [ -z ${USER_AIRGAP_REGISTRY+x} ]; then
