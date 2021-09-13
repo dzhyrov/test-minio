@@ -5,7 +5,7 @@ resources:
 - gateway.yaml
 - cluster-role.yaml
 - cluster-role-binding.yaml
-#- config-map.yaml
+- config-map.yaml
 - deployment.yaml
 - secret.yaml
 - service-account.yaml
