@@ -245,6 +245,7 @@ data:
 
     # List of repositories for which tag to digest resolving should be skipped
     registriesSkippingTagResolving: "ko.local,dev.local"
+  queueSidecarCPULimit: "1000m"
   queueSidecarImage: '$(airgapRegistry)gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:d066ae5b642885827506610ae25728d442ce11447b82df6e9cc4c174bb97ecb3'
 kind: ConfigMap
 metadata:
