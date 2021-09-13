@@ -271,16 +271,6 @@ spec:
     spec:
       containers:
       - env:
-        - name: GOGC
-          value: '500'
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
         - name: SYSTEM_NAMESPACE
           valueFrom:
             fieldRef:
