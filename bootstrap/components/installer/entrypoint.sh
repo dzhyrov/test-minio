@@ -58,11 +58,12 @@ deploy_authservices()
 
 deploy_knative()
 {
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-crds/base | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving-install/overlays/proxy | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-crds/base | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl apply -f - && \
-    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing-install/overlays/image-pull-secret | kubectl apply -f -
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving/overlays/proxy | kubectl apply -f - || \
+    #workaround to fix Error no matches for kind "Image" in version "caching.internal.knative.dev/v1alpha1"
+    #just twice install knative-serving
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-serving/overlays/proxy | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/common/knative/knative-eventing/overlays/image-pull-secret | kubectl apply -f - && \
+    ./kustomize build ${MANIFESTS_DIR}/bootstrap/components/image-pull-secret/knative-eventing | kubectl apply -f -
 }
 
 deploy_cluster_local_gateway()

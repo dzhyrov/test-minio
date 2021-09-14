@@ -1,0 +1,7 @@
+varReference:
+- path: spec/template/spec/containers/image
+  kind: Deployment
+- path: spec/image
+  kind: Image
+- path: data/queueSidecarImage
+  kind: ConfigMap
